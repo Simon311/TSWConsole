@@ -13,7 +13,7 @@ using TShockAPI.ServerSideCharacters;
 
 namespace tswConsole
 {
-    [ApiVersion(2, 0)]
+    [ApiVersion(2, 1)]
     public class TSWConsole : TerrariaPlugin
     {
         public static string SavePath = "tshock";
