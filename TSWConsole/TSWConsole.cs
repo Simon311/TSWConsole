@@ -7,40 +7,40 @@ using Rests;
 
 namespace tswConsole
 {
-    [ApiVersion(2, 1)]
-    public class TSWConsole : TerrariaPlugin
-    {
-        public override Version Version
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Version; }
-        }
-        public override string Author
-        {
-            get { return "XGhozt & Khoatic & Simon311"; }
-        }
-        public override string Name
-        {
-            get { return "TSWConsole"; }
-        }
+	[ApiVersion(2, 1)]
+	public class TSWConsole : TerrariaPlugin
+	{
+		public override Version Version
+		{
+			get { return Assembly.GetExecutingAssembly().GetName().Version; }
+		}
+		public override string Author
+		{
+			get { return "XGhozt & Khoatic & Simon311"; }
+		}
+		public override string Name
+		{
+			get { return "TSWConsole"; }
+		}
 
-        public override string Description
-        {
-            get { return "[tserverweb.com] REST endpoint for viewing server log file"; }
-        }
+		public override string Description
+		{
+			get { return "[tserverweb.com] REST endpoint for viewing server log file"; }
+		}
 
 		const int defaultLimit = 200;
 		const int absoluteLimit = 1000;
 		static ProxyLog ourLog;
 
 		public override void Initialize()
-        {
+		{
 			ourLog = new ProxyLog(TShock.Log, absoluteLimit);
 			TShock.Log = ourLog;
 			TShock.RestApi.Register(new SecureRestCommand("/tswconsole", GetLog, "AdminRest.allow"));
-        }
+		}
 
-        private object GetLog(RestRequestArgs args)
-        {
+		private object GetLog(RestRequestArgs args)
+		{
 			int lineCount;
 			int sx;
 
@@ -61,19 +61,19 @@ namespace tswConsole
 				buffer[i] = ourLog.Cache[start+i];
 			}
 
-            return new RestObject() { { "log", buffer } };
-        }
+			return new RestObject() { { "log", buffer } };
+		}
 
-        private static RestObject RestError(string message, string status = "400")
-        {
-            return new RestObject(status) { Error = message };
-        }
+		private static RestObject RestError(string message, string status = "400")
+		{
+			return new RestObject(status) { Error = message };
+		}
 
-        public TSWConsole(Main game)
-            : base(game)
-        {
-            Order = 1;
-        }
+		public TSWConsole(Main game)
+			: base(game)
+		{
+			Order = 1;
+		}
 
 		static int sex(int x)
 		{
