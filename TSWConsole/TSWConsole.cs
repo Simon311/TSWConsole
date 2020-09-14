@@ -3,99 +3,81 @@ using Terraria;
 using TShockAPI;
 using TerrariaApi.Server;
 using System.Reflection;
-using System.Collections.Generic;
 using Rests;
-using System.Linq;
-using System.IO;
-using System.Text.RegularExpressions;
-using System.Data;
-using TShockAPI.ServerSideCharacters;
 
 namespace tswConsole
 {
-    [ApiVersion(2, 1)]
-    public class TSWConsole : TerrariaPlugin
-    {
-        public static string SavePath = "tshock";
-        public static IDbConnection DB;
+	[ApiVersion(2, 1)]
+	public class TSWConsole : TerrariaPlugin
+	{
+		public override Version Version
+		{
+			get { return Assembly.GetExecutingAssembly().GetName().Version; }
+		}
+		public override string Author
+		{
+			get { return "XGhozt & Khoatic & Simon311"; }
+		}
+		public override string Name
+		{
+			get { return "TSWConsole"; }
+		}
 
-        public override Version Version
-        {
-            get { return Assembly.GetExecutingAssembly().GetName().Version; }
-        }
-        public override string Author
-        {
-            get { return "XGhozt & Khoatic"; }
-        }
-        public override string Name
-        {
-            get { return "TSWConsole"; }
-        }
+		public override string Description
+		{
+			get { return "[tserverweb.com] REST endpoint for viewing server log file"; }
+		}
 
-        public override string Description
-        {
-            get { return "[tserverweb.com] REST endpoint for viewing server log file"; }
-        }
+		const int defaultLimit = 200;
+		const int absoluteLimit = 1000;
+		static ProxyLog ourLog;
 
-        public static ConfigFile Config;
+		public override void Initialize()
+		{
+			ourLog = new ProxyLog(TShock.Log, absoluteLimit);
+			TShock.Log = ourLog;
+			TShock.RestApi.Register(new SecureRestCommand("/tswconsole", GetLog, "AdminRest.allow"));
+		}
 
-        public static ServerSideConfig ServerSideCharacterConfig;
+		private object GetLog(RestRequestArgs args)
+		{
+			int lineCount;
+			int sx;
 
-        public override void Initialize()
-        {
-            TShock.RestApi.Register(new SecureRestCommand("/tswconsole", getLog, "AdminRest.allow"));
-        }
+			if (!string.IsNullOrWhiteSpace(args.Parameters["count"]))
+			{
+				int.TryParse(args.Parameters["count"].Trim(), out lineCount);
+				sx = sex(absoluteLimit - lineCount);
+				lineCount = sx * -absoluteLimit + (1 + sx) * lineCount;
+			}
+			else lineCount = defaultLimit;
 
-        // Initial credit to: https://github.com/Grandpa-G/ExtraRestAdmin
-        private object getLog(RestRequestArgs args)
-        {
+			sx = sex(ourLog.Cache.Count - lineCount);
+			lineCount = sx * -ourLog.Cache.Count + (1 + sx) * lineCount;
+			int start = ourLog.Cache.Count - lineCount;
+			string[] buffer = new string[lineCount];
+			for (int i = 0; i < lineCount; i++)
+			{
+				buffer[i] = ourLog.Cache[start+i];
+			}
 
-            String lineCount = "200";
+			return new RestObject() { { "log", buffer } };
+		}
 
-            if (!string.IsNullOrWhiteSpace(args.Parameters["count"])) {
-                lineCount = args.Parameters["count"];
-            }
+		private static RestObject RestError(string message, string status = "400")
+		{
+			return new RestObject(status) { Error = message };
+		}
 
-            var directory = new DirectoryInfo(TShock.Config.LogPath);
+		public TSWConsole(Main game)
+			: base(game)
+		{
+			Order = 1;
+		}
 
-            String searchPattern = @"(19|20)\d\d[-](0[1-9]|1[012])[-](0[1-9]|[12][0-9]|3[01]).*.log";
-
-            var log = Directory.GetFiles(TShock.Config.LogPath).Where(path => Regex.Match(path, searchPattern).Success).Last();
-            String logFile = Path.GetFullPath(log);
-
-            FileStream logFileStream = new FileStream(logFile, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
-            StreamReader logFileReader = new StreamReader(logFileStream);
-
-            int limit = System.Convert.ToInt32(lineCount);
-            var buffor = new Queue<string>(limit);
-            while (!logFileReader.EndOfStream)
-            {
-                string line = logFileReader.ReadLine();
-                if (buffor.Count >= limit)
-                    buffor.Dequeue();
-                buffor.Enqueue(line);
-            }
-
-            string[] LogLinesEnd = buffor.ToArray();
-            
-            // Clean up
-            logFileReader.Close();
-            logFileStream.Close();
-
-            return new RestObject() { { "log", LogLinesEnd } };
-
-        }
-
-        private static RestObject RestError(string message, string status = "400")
-        {
-            return new RestObject(status) { Error = message };
-        }
-
-        public TSWConsole(Main game)
-            : base(game)
-        {
-            Order = 1;
-        }
-
-    }
+		static int sex(int x)
+		{
+			return x >> (8 * sizeof(int) - 1);
+		}
+	}
 }
