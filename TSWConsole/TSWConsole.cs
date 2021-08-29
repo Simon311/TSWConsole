@@ -75,9 +75,11 @@ namespace tswConsole
 			Order = 1;
 		}
 
+#pragma warning disable IDE1006
 		static int sex(int x)
 		{
 			return x >> (8 * sizeof(int) - 1);
 		}
+#pragma warning restore IDE1006
 	}
 }

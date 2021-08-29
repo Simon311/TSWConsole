@@ -55,7 +55,7 @@ namespace tswConsole
 
 		public void ConsoleDebug(string message) //
 		{
-			if (TShock.Config.DebugLogs)
+			if (TShock.Config.Settings.DebugLogs)
 			{
 				original.ConsoleDebug(message);
 				if (Cache.Count >= maxItems) { Cache.RemoveAt(0); }
@@ -65,7 +65,7 @@ namespace tswConsole
 
 		public void ConsoleDebug(string format, params object[] args)
 		{
-			if (TShock.Config.DebugLogs) { ConsoleDebug(string.Format(format, args)); }
+			if (TShock.Config.Settings.DebugLogs) { ConsoleDebug(string.Format(format, args)); }
 		}
 
 		public void Warn(string message)
@@ -110,12 +110,12 @@ namespace tswConsole
 
 		public void Debug(string message)
 		{
-			if (TShock.Config.DebugLogs) { Write(message, TraceLevel.Verbose); }
+			if (TShock.Config.Settings.DebugLogs) { Write(message, TraceLevel.Verbose); }
 		}
 
 		public void Debug(string format, params object[] args)
 		{
-			if (TShock.Config.DebugLogs) { Debug(string.Format(format, args)); }
+			if (TShock.Config.Settings.DebugLogs) { Debug(string.Format(format, args)); }
 		}
 
 		public void Write(string message, TraceLevel level) //
