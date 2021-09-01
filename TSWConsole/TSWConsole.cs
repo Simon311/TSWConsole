@@ -16,7 +16,7 @@ namespace tswConsole
 		}
 		public override string Author
 		{
-			get { return "XGhozt & Khoatic & Simon311"; }
+			get { return "Simon311 & XGhozt & Khoatic"; }
 		}
 		public override string Name
 		{
