@@ -68,9 +68,19 @@ namespace tswConsole
 			if (TShock.Config.Settings.DebugLogs) { ConsoleDebug(string.Format(format, args)); }
 		}
 
+		public void ConsoleWarn(string message)
+		{
+			Write(message, TraceLevel.Warning);
+		}
+
 		public void Warn(string message)
 		{
 			Write(message, TraceLevel.Warning);
+		}
+
+		public void ConsoleWarn(string format, params object[] args)
+		{
+			Warn(string.Format(format, args));
 		}
 
 		public void Warn(string format, params object[] args)
