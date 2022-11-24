@@ -44,13 +44,12 @@ namespace tswConsole
 			int lineCount;
 			int sx;
 
-			if (!string.IsNullOrWhiteSpace(args.Parameters["count"]))
-			{
-				int.TryParse(args.Parameters["count"].Trim(), out lineCount);
-				sx = sex(absoluteLimit - lineCount);
-				lineCount = sx * -absoluteLimit + (1 + sx) * lineCount;
-			}
-			else lineCount = defaultLimit;
+			/* sex(int x) is a branchless function that will return 0 if x is >= 0, else will return -1 */
+
+			ushort.TryParse(args.Parameters["count"], out ushort lc);
+			sx = sex(lc - 1);
+			lineCount = sx * -defaultLimit + lc;
+			// ourLog.ConsoleInfo($"Requested number of lines: {lineCount}");
 
 			sx = sex(ourLog.Cache.Count - lineCount);
 			lineCount = sx * -ourLog.Cache.Count + (1 + sx) * lineCount;
@@ -64,10 +63,10 @@ namespace tswConsole
 			return new RestObject() { { "log", buffer } };
 		}
 
-		private static RestObject RestError(string message, string status = "400")
+		/* private static RestObject RestError(string message, string status = "400")
 		{
 			return new RestObject(status) { Error = message };
-		}
+		} */
 
 		public TSWConsole(Main game)
 			: base(game)
@@ -75,11 +74,9 @@ namespace tswConsole
 			Order = 1;
 		}
 
-#pragma warning disable IDE1006
 		static int sex(int x)
 		{
 			return x >> (8 * sizeof(int) - 1);
 		}
-#pragma warning restore IDE1006
 	}
 }
