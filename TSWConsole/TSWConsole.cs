@@ -25,7 +25,7 @@ namespace tswConsole
 
 		public override string Description
 		{
-			get { return "[tserverweb.com] REST endpoint for viewing server log file"; }
+			get { return "Outputs console content via REST for TServerWeb.com"; }
 		}
 
 		const int defaultLimit = 200;

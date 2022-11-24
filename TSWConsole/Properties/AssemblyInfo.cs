@@ -2,7 +2,7 @@
 using System.Runtime.InteropServices;
 
 [assembly: AssemblyTitle("TSWConsole")]
-[assembly: AssemblyDescription("Outputs console content via REST for TServerWeb.")]
+[assembly: AssemblyDescription("Outputs console content via REST for TServerWeb.com")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("TSWConsole")]
